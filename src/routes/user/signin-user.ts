@@ -1,11 +1,15 @@
 import z from "zod";
 import { Hono } from "hono";
-import { sign } from "hono/jwt";
+import { sign, verify } from "hono/jwt";
 import { safeAsync } from "@utils/safe-async.ts";
 import { getUser } from "@sysdb/user/get-user.ts";
 import { sendSigninEmail } from "../../email/index.ts";
+import { getEnvThrows } from "@utils/throws-env.ts";
+import { setCookie } from "hono/cookie";
 
 const signinUserRoute = new Hono();
+
+const JWT_SECRET = getEnvThrows("JWT_SECRET");
 
 const ZsigninUser = z.object({
   email: z.email(),
@@ -13,7 +17,22 @@ const ZsigninUser = z.object({
 
 signinUserRoute.get(
   "/signin-user/:token",
-  async (_) => {
+  async (c) => {
+    const token = c.req.param("token");
+
+    const { error: jwtVerifyError } = await safeAsync(() =>
+      verify(token, JWT_SECRET)
+    );
+
+    if (jwtVerifyError) {
+      c.status(401);
+      return c.text("Unauthorized.");
+    }
+
+    setCookie(c, "auth-token", token);
+
+    c.status(200);
+    return c.text("Logged in.");
   },
 );
 
@@ -46,7 +65,10 @@ signinUserRoute.post(
       return c.json({ "message": "Unauthorized." });
     }
 
-    const token = await sign({ ...user }, "sangit_was_here");
+    const token = await sign({
+      ...user,
+      exp: Math.floor(Date.now() / 1000) + 60 * 30,
+    }, JWT_SECRET);
 
     const { error: sendEmailError } = await safeAsync(() =>
       sendSigninEmail(parsed.data.email, token)
