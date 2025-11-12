@@ -32,6 +32,7 @@ import {
   createUserRoute,
   deleteUserRoute,
   listUserRoute,
+  signinUserRoute,
 } from "@routes/user/index.ts";
 import { _truncateDbRoute } from "@routes/_truncate-db.ts";
 
@@ -74,6 +75,7 @@ app.route("/", stopDatabaseRoute);
 app.route("/", createUserRoute);
 app.route("/", listUserRoute);
 app.route("/", deleteUserRoute);
+app.route("/", signinUserRoute);
 
 app.route("/", _truncateDbRoute);
 
