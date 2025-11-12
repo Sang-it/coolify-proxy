@@ -8,13 +8,13 @@ deleteUserRoute.delete(
   "/delete-user/:id",
   async (c) => {
     const id = c.req.param("id");
-    const { data, error } = await safeAsync(() => deleteUser(id));
+    const { error } = await safeAsync(() => deleteUser(id));
     if (error) {
       c.status(404);
       return c.json({ message: error.message });
     }
     c.status(200);
-    return c.json(data);
+    return c.text("OK");
   },
 );
 

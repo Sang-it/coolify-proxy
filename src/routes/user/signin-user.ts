@@ -32,7 +32,7 @@ signinUserRoute.get(
     setCookie(c, "auth-token", token);
 
     c.status(200);
-    return c.text("Logged in.");
+    return c.json({ "message": "Logged in." });
   },
 );
 

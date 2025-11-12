@@ -1,19 +1,24 @@
 import { Hono } from "hono";
 import { safeAsync } from "@utils/safe-async.ts";
+import { bearerAuth } from "hono/bearer-auth";
 import { _truncateDb } from "@sysdb/util.ts";
+import { getEnvThrows } from "@utils/throws-env.ts";
 
 const _truncateDbRoute = new Hono();
 
+const token = getEnvThrows("TRUNCATE_TOKEN");
+
 _truncateDbRoute.delete(
   "/truncate-db",
+  bearerAuth({ token }),
   async (c) => {
-    const { data, error } = await safeAsync(() => _truncateDb());
+    const { error } = await safeAsync(() => _truncateDb());
     if (error) {
       c.status(404);
       return c.json({ message: error.message });
     }
     c.status(200);
-    return c.json(data);
+    return c.text("OK");
   },
 );
 
