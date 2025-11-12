@@ -1,7 +1,5 @@
-import process from "node:process";
-
 export const getEnvThrows = (key: string) => {
-  const value = process.env[key];
+  const value = Deno.env.get(key);
   if (!value) {
     throw new Error(`Key: ${key} is not set.`);
   }

@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { getApplication } from "@coolify/index.ts";
+import { getApplication } from "@coolify/application.ts";
 import { safeAsync } from "@utils/safe-async.ts";
 
 const getApplicationRoute = new Hono();
 
-getApplicationRoute.post("/get-application/:uuid", async (c) => {
+getApplicationRoute.get("/get-application/:uuid", async (c) => {
   const uuid = c.req.param("uuid");
   const { data, error } = await safeAsync(() => getApplication(uuid));
   if (error) {
