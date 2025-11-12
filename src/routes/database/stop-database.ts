@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { safeAsync } from "@utils/safe-async.ts";
-import { stopDatabase } from "@coolify/Database.ts";
+import { stopDatabase } from "@coolify/database.ts";
 
 const stopDatabaseRoute = new Hono();
 

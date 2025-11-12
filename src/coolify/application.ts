@@ -282,5 +282,5 @@ export const deleteEnv = async (app_uuid: string, env_uuid: string) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };

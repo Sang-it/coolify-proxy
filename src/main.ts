@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import {
   createApplicationRoute,
   createEnvRoute,
@@ -27,8 +28,16 @@ import {
   getProjectRoute,
   listProjectRoute,
 } from "@routes/project/index.ts";
+import {
+  createUserRoute,
+  deleteUserRoute,
+  listUserRoute,
+} from "@routes/user/index.ts";
+import { _truncateDbRoute } from "@routes/_truncate-db.ts";
 
 const app = new Hono();
+
+app.use("/*", cors());
 
 app.get("/", (c) => {
   return c.text("Hello Hello!");
@@ -61,5 +70,11 @@ app.route("/", deleteDatabaseRoute);
 app.route("/", restartDatabaseRoute);
 app.route("/", startDatabaseRoute);
 app.route("/", stopDatabaseRoute);
+
+app.route("/", createUserRoute);
+app.route("/", listUserRoute);
+app.route("/", deleteUserRoute);
+
+app.route("/", _truncateDbRoute);
 
 Deno.serve(app.fetch);

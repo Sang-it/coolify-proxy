@@ -19,7 +19,7 @@ createProjectRoute.post("/create-project", async (c) => {
   const parsed = ZcreateProject.safeParse(body);
   if (!parsed.success) {
     c.status(422);
-    return c.json({ message: parsed.error.message });
+    return c.json({ message: z.prettifyError(parsed.error) });
   }
 
   const { data: projectData, error: createProjectError } = await safeAsync(
