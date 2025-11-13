@@ -1,7 +1,13 @@
 import z from "zod";
 import { Hono } from "hono";
-import { createApplication } from "@coolify/application.ts";
+import { jwt } from "hono/jwt";
+import {
+  createApplication as createApplicationCoolify,
+  deleteApplication,
+} from "@coolify/application.ts";
+import { createApplication as createApplicationEntry } from "@sysdb/application/create-application.ts";
 import { safeAsync } from "@utils/safe-async.ts";
+import { getEnvThrows } from "@utils/throws-env.ts";
 
 const createApplicationRoute = new Hono();
 
@@ -14,28 +20,65 @@ const ZcreateApplication = z.object({
   build_pack: z.enum(["nixpacks", "static", "dockerfile", "dockercompose"]),
 });
 
-createApplicationRoute.post("/create-application", async (c) => {
-  const { data: body, error: jsonError } = await safeAsync(() => c.req.json());
-  if (jsonError) {
-    c.status(422);
-    return c.json({ message: jsonError.message });
-  }
+const JWT_SECRET = getEnvThrows("JWT_SECRET");
 
-  const parsed = ZcreateApplication.safeParse(body);
-  if (!parsed.success) {
-    c.status(422);
-    return c.json({ message: z.prettifyError(parsed.error) });
-  }
+createApplicationRoute.post(
+  "/create-application",
+  jwt({
+    secret: JWT_SECRET,
+    cookie: "auth-token",
+  }),
+  async (c) => {
+    const { data: body, error: jsonError } = await safeAsync(() =>
+      c.req.json()
+    );
+    if (jsonError) {
+      c.status(422);
+      return c.json({ message: jsonError.message });
+    }
 
-  const { data: application, error: createApplicationError } = await safeAsync(
-    () => createApplication(parsed.data),
-  );
-  if (createApplicationError) {
-    c.status(422);
-    return c.json({ message: createApplicationError.message });
-  }
+    const parsed = ZcreateApplication.safeParse(body);
+    if (!parsed.success) {
+      c.status(422);
+      return c.json({ message: z.prettifyError(parsed.error) });
+    }
 
-  return c.json(application);
-});
+    const { data: applicationCoolify, error: createApplicationErrorCoolify } =
+      await safeAsync(
+        () => createApplicationCoolify(parsed.data),
+      );
+
+    if (createApplicationErrorCoolify) {
+      c.status(422);
+      return c.json({ message: createApplicationErrorCoolify.message });
+    }
+
+    const { data: applicationEntry, error: createApplicationErrorEntry } =
+      await safeAsync(
+        () =>
+          createApplicationEntry(
+            applicationCoolify.uuid,
+            parsed.data.project_uuid,
+            parsed.data.domains,
+          ),
+      );
+
+    if (createApplicationErrorEntry) {
+      const { error: deleteApplicationError } = await safeAsync(
+        () => deleteApplication(applicationCoolify.uuid),
+      );
+
+      if (deleteApplicationError) {
+        c.status(422);
+        return c.json({ message: deleteApplicationError.message });
+      }
+
+      c.status(422);
+      return c.json({ message: createApplicationErrorEntry.message });
+    }
+
+    return c.json(applicationEntry);
+  },
+);
 
 export { createApplicationRoute };

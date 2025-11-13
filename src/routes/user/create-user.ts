@@ -2,6 +2,8 @@ import z from "zod";
 import { Hono } from "hono";
 import { safeAsync } from "@utils/safe-async.ts";
 import { createUser } from "@sysdb/user/create-user.ts";
+import { getEnvThrows } from "@utils/throws-env.ts";
+import { bearerAuth } from "hono/bearer-auth";
 
 const createUserRoute = new Hono();
 
@@ -9,7 +11,9 @@ const ZcreateUser = z.object({
   email: z.email(),
 });
 
-createUserRoute.post("/create-user", async (c) => {
+const token = getEnvThrows("PRIV_TOKEN");
+
+createUserRoute.post("/create-user", bearerAuth({ token }), async (c) => {
   const { data: body, error: jsonError } = await safeAsync(() => c.req.json());
   if (jsonError) {
     c.status(422);

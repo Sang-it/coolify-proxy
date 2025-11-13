@@ -15,6 +15,7 @@ export interface Project {
 
 export interface Application {
   id: string;
+  fqdn: string;
   project_id: string;
   created_at: string;
 }

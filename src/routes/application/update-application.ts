@@ -1,7 +1,9 @@
 import z from "zod";
 import { Hono } from "hono";
+import { jwt } from "hono/jwt";
 import { updateApplication } from "@coolify/application.ts";
 import { safeAsync } from "@utils/safe-async.ts";
+import { getEnvThrows } from "@utils/throws-env.ts";
 
 const updateApplicationRoute = new Hono();
 
@@ -14,28 +16,40 @@ const ZupdateApplication = z.object({
   build_pack: z.enum(["nixpacks", "static", "dockerfile", "dockercompose"]),
 });
 
-updateApplicationRoute.post("/update-application", async (c) => {
-  const { data: body, error: jsonError } = await safeAsync(() => c.req.json());
-  if (jsonError) {
-    c.status(422);
-    return c.json({ message: jsonError.message });
-  }
+const JWT_SECRET = getEnvThrows("JWT_SECRET");
 
-  const parsed = ZupdateApplication.safeParse(body);
-  if (!parsed.success) {
-    c.status(422);
-    return c.json({ message: z.prettifyError(parsed.error) });
-  }
+updateApplicationRoute.post(
+  "/update-application",
+  jwt({
+    secret: JWT_SECRET,
+    cookie: "auth-token",
+  }),
+  async (c) => {
+    const { data: body, error: jsonError } = await safeAsync(() =>
+      c.req.json()
+    );
+    if (jsonError) {
+      c.status(422);
+      return c.json({ message: jsonError.message });
+    }
 
-  const { data: application, error: updateApplicationError } = await safeAsync(
-    () => updateApplication(parsed.data),
-  );
-  if (updateApplicationError) {
-    c.status(422);
-    return c.json({ message: updateApplicationError.message });
-  }
+    const parsed = ZupdateApplication.safeParse(body);
+    if (!parsed.success) {
+      c.status(422);
+      return c.json({ message: z.prettifyError(parsed.error) });
+    }
 
-  return c.json(application);
-});
+    const { data: application, error: updateApplicationError } =
+      await safeAsync(
+        () => updateApplication(parsed.data),
+      );
+    if (updateApplicationError) {
+      c.status(422);
+      return c.json({ message: updateApplicationError.message });
+    }
+
+    return c.json(application);
+  },
+);
 
 export { updateApplicationRoute };

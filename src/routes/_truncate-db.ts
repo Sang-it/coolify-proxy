@@ -6,7 +6,7 @@ import { getEnvThrows } from "@utils/throws-env.ts";
 
 const _truncateDbRoute = new Hono();
 
-const token = getEnvThrows("TRUNCATE_TOKEN");
+const token = getEnvThrows("PRIV_TOKEN");
 
 _truncateDbRoute.delete(
   "/truncate-db",

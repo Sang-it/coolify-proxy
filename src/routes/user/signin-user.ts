@@ -2,7 +2,7 @@ import z from "zod";
 import { Hono } from "hono";
 import { sign, verify } from "hono/jwt";
 import { safeAsync } from "@utils/safe-async.ts";
-import { getUser } from "@sysdb/user/get-user.ts";
+import { getUserByEmail } from "@sysdb/user/get-user.ts";
 import { sendSigninEmail } from "../../email/index.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
 import { setCookie } from "hono/cookie";
@@ -54,7 +54,7 @@ signinUserRoute.post(
     }
 
     const { data: user, error: getUserError } = await safeAsync(() =>
-      getUser(parsed.data.email)
+      getUserByEmail(parsed.data.email)
     );
     if (getUserError) {
       c.status(401);
@@ -67,7 +67,7 @@ signinUserRoute.post(
 
     const token = await sign({
       ...user,
-      exp: Math.floor(Date.now() / 1000) + 60 * 30,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 60,
     }, JWT_SECRET);
 
     const { error: sendEmailError } = await safeAsync(() =>

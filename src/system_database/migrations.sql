@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS projects (
 
 CREATE TABLE IF NOT EXISTS applications (
   id TEXT PRIMARY KEY DEFAULT uuid_generate_v4(),
+  fqdn TEXT NOT NULL,
   project_id TEXT REFERENCES projects(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT NOW()
 );
