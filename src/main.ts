@@ -11,6 +11,7 @@ import {
   restartApplicationRoute,
   startApplicationRoute,
   stopApplicationRoute,
+  updateApplicationRoute,
   updateEnvRoute,
 } from "@routes/application/index.ts";
 import {
@@ -45,6 +46,7 @@ app.get("/", (c) => {
 });
 
 app.route("/", createApplicationRoute);
+app.route("/", updateApplicationRoute);
 app.route("/", getApplicationRoute);
 app.route("/", listApplicationRoute);
 app.route("/", deleteApplicationRoute);

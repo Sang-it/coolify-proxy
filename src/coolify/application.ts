@@ -38,18 +38,18 @@ export const createApplication = async (params: Application) => {
   return response.json();
 };
 
-export const updateApplication = async (params: Application) => {
-  const body = {
-    ...params,
-  };
-
-  const response = await fetch(ENDPOINT.APPLICATION_PUBLIC, {
-    method: "POST",
+export const updateApplication = async (
+  uuid: string,
+  params: Partial<Application>,
+) => {
+  const { environment_name: _, ...rest } = params;
+  const response = await fetch(`${ENDPOINT.APPLICATION}/${uuid}`, {
+    method: "PATCH",
     headers: {
       "Authorization": `Bearer ${COOLIFY_ACCESS_TOKEN}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(rest),
   });
 
   if (!response.ok) {

@@ -11,12 +11,13 @@ const updateApplicationRoute = new Hono();
 const JWT_SECRET = getEnvThrows("JWT_SECRET");
 
 updateApplicationRoute.post(
-  "/update-application",
+  "/update-application/:app_uuid",
   jwt({
     secret: JWT_SECRET,
     cookie: "auth-token",
   }),
   async (c) => {
+    const app_uuid = c.req.param("app_uuid");
     const { data: body, error: jsonError } = await safeAsync(() =>
       c.req.json()
     );
@@ -25,7 +26,7 @@ updateApplicationRoute.post(
       return c.json({ message: jsonError.message });
     }
 
-    const parsed = ZApplication.safeParse(body);
+    const parsed = ZApplication.partial().safeParse(body);
     if (!parsed.success) {
       c.status(422);
       return c.json({ message: z.prettifyError(parsed.error) });
@@ -33,7 +34,7 @@ updateApplicationRoute.post(
 
     const { data: application, error: updateApplicationError } =
       await safeAsync(
-        () => updateApplication(parsed.data),
+        () => updateApplication(app_uuid, parsed.data),
       );
     if (updateApplicationError) {
       c.status(422);
