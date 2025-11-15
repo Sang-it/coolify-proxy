@@ -25,13 +25,13 @@ deleteDatabaseRoute.delete(
       return c.json({ message: deleteDatabaseCoolifyError.message });
     }
 
-    const { data, error } = await safeAsync(() => deleteDatabaseEntry(uuid));
+    const { error } = await safeAsync(() => deleteDatabaseEntry(uuid));
     if (error) {
       c.status(404);
       return c.json({ message: error });
     }
     c.status(200);
-    return c.json(data);
+    return c.text("OK");
   },
 );
 

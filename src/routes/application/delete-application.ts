@@ -25,14 +25,14 @@ deleteApplicationRoute.delete(
       return c.json({ message: deleteApplicationCoolifyError.message });
     }
 
-    const { data, error } = await safeAsync(() => deleteApplicationEntry(uuid));
+    const { error } = await safeAsync(() => deleteApplicationEntry(uuid));
     if (error) {
       c.status(404);
       return c.json({ message: error });
     }
 
     c.status(200);
-    return c.json(data);
+    return c.text("OK");
   },
 );
 

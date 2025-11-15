@@ -25,14 +25,14 @@ deleteProjectRoute.get(
       return c.json({ message: deleteProjectCoolifyError.message });
     }
 
-    const { data, error } = await safeAsync(() => deleteProjectEntry(uuid));
+    const { error } = await safeAsync(() => deleteProjectEntry(uuid));
     if (error) {
       c.status(404);
       return c.json({ message: error });
     }
 
     c.status(200);
-    return c.json(data);
+    return c.text("OK");
   },
 );
 
