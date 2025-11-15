@@ -7,7 +7,7 @@ export const ZApplication = z.object({
   git_branch: z.string().default("main"),
   environment_name: z.string().default("production"),
   build_pack: z.enum(["nixpacks", "static", "dockerfile", "dockercompose"]),
-  domains: z.url({ hostname: /(^|\.)caldwellwebservices\.com$/ }).optional(),
+  domains: z.url({ hostname: /(^|\.)caldwellwebservices\.com$/ }),
   destination_uuid: z.string().optional(),
   name: z.string().optional(),
   description: z.string().optional(),

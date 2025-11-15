@@ -94,7 +94,7 @@ export const getApplication = async (uuid: string) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };
 
 export const startApplication = async (uuid: string) => {
@@ -112,7 +112,7 @@ export const startApplication = async (uuid: string) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };
 
 export const stopApplication = async (uuid: string) => {
@@ -130,7 +130,7 @@ export const stopApplication = async (uuid: string) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };
 
 export const restartApplication = async (uuid: string) => {
@@ -148,7 +148,7 @@ export const restartApplication = async (uuid: string) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };
 
 export const deleteApplication = async (uuid: string) => {
@@ -166,7 +166,7 @@ export const deleteApplication = async (uuid: string) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };
 
 export const listEnv = async (uuid: string) => {
@@ -184,7 +184,7 @@ export const listEnv = async (uuid: string) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };
 
 export const createEnv = async (uuid: string, params: EnvironmentVariable) => {
@@ -204,7 +204,7 @@ export const createEnv = async (uuid: string, params: EnvironmentVariable) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };
 
 export const updateEnv = async (uuid: string, params: EnvironmentVariable) => {
@@ -224,7 +224,7 @@ export const updateEnv = async (uuid: string, params: EnvironmentVariable) => {
     );
   }
 
-  return await response.json();
+  return response.json();
 };
 
 export const deleteEnv = async (app_uuid: string, env_uuid: string) => {
