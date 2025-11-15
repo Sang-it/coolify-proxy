@@ -1,24 +1,23 @@
 # Coolify Proxy API
 
-A Deno-based proxy API that provides a secure interface to manage Coolify resources including applications, databases, and projects. This API acts as a middleware layer between client applications and Coolify, handling authentication, validation, and resource management.
+A REST API proxy for Coolify that provides authenticated access to manage applications, databases, and projects with user isolation and JWT-based authentication.
 
 ## Features
 
-- **Application Management**: Create, update, delete, and manage application deployments
-- **Database Management**: Provision and manage database instances
-- **Project Organization**: Create and manage projects to organize resources
-- **Environment Variables**: Manage application environment configurations
-- **User Authentication**: JWT-based authentication with user session management
-- **Email Notifications**: Integration with Resend for email communications
-- **Resource Control**: Start, stop, and restart applications and databases
+- Multi-tenant user management with project isolation
+- JWT-based authentication via cookies
+- Full CRUD operations for applications, databases, and projects
+- Environment variable management for applications
+- Resource lifecycle control (start/stop/restart)
+- Email notifications via Resend
+- Input validation with Zod schemas
 
 ## Prerequisites
 
-- Deno runtime (latest version)
-- PostgreSQL database for user management
-- Access to a Coolify instance
-- Coolify API access token
-- Resend API key for email services
+- Deno runtime
+- PostgreSQL database
+- Coolify instance with API access
+- Resend API key for emails
 
 ## Installation
 
@@ -28,12 +27,12 @@ git clone <repository-url>
 cd coolify-proxy
 ```
 
-2. Copy and configure the environment file:
+2. Set up environment variables:
 ```bash
 cp .env.example .env
 ```
 
-3. Configure your environment variables in `.env`:
+3. Configure `.env`:
 ```
 COOLIFY_BASE_URL=https://your-coolify-instance.com
 COOLIFY_ACCESS_TOKEN=your_coolify_api_token
@@ -45,129 +44,104 @@ PRIV_TOKEN=your_privileged_access_token
 
 ## Usage
 
-### Development Mode
+Start the server:
 ```bash
-deno task dev
+deno task dev    # Development with auto-reload
+deno task start  # Production
 ```
 
-### Production Mode
-```bash
-deno task start
-```
+Server runs on `http://localhost:8000`
 
-The server will start on `http://localhost:8000` by default.
+## Architecture
 
-## Project Structure
+The API acts as a proxy between clients and Coolify, adding:
+- User authentication and session management
+- Project-based resource isolation
+- Persistent metadata storage in PostgreSQL
+- Request validation and error handling
 
-```
-src/
-├── coolify/              # Coolify API integration layer
-│   ├── application.ts    # Application management
-│   ├── database.ts       # Database management
-│   ├── project.ts        # Project management
-│   ├── server.ts         # Server configuration
-│   └── constant.ts       # API constants
-├── email/                # Email service integration
-│   └── index.ts          # Resend email handler
-├── routes/               # API route handlers
-│   ├── application/      # Application endpoints
-│   │   ├── env/          # Environment variable management
-│   │   └── *.ts          # CRUD and control operations
-│   ├── database/         # Database endpoints
-│   ├── project/          # Project endpoints
-│   └── user/             # User management endpoints
-├── system_database/      # Database abstraction layer
-│   ├── application/      # Application data operations
-│   ├── database/         # Database data operations
-│   ├── project/          # Project data operations
-│   ├── user/             # User data operations
-│   ├── migrations.sql    # Database schema migrations
-│   └── types.ts          # TypeScript type definitions
-├── utils/                # Utility functions
-│   ├── safe-async.ts     # Error handling wrapper
-│   └── throws-env.ts     # Environment variable validation
-└── main.ts               # Application entry point
-```
+Key components:
+- `src/coolify/` - Coolify API client wrappers
+- `src/routes/` - HTTP endpoint handlers
+- `src/system_database/` - PostgreSQL data layer
+- `src/email/` - Email service integration
 
 ## API Endpoints
 
+All endpoints except `/create-user` and `/signin-user` require JWT authentication via `auth-token` cookie.
+
+### Authentication
+- `POST /signin-user` - Sign in and receive JWT
+
 ### Applications
-- `POST /create-application` - Deploy a new application
-- `GET /get-application/:uuid` - Get application details
-- `GET /list-application` - List all applications
-- `DELETE /delete-application/:uuid` - Remove an application
-- `POST /restart-application/:uuid` - Restart an application
-- `POST /start-application/:uuid` - Start an application
-- `POST /stop-application/:uuid` - Stop an application
+- `POST /create-application` - Deploy application
+- `GET /get-application/:uuid` - Get details
+- `GET /list-application` - List user's applications
+- `DELETE /delete-application/:uuid` - Remove application
+- `POST /start-application/:uuid` - Start application
+- `POST /stop-application/:uuid` - Stop application
+- `POST /restart-application/:uuid` - Restart application
 
 ### Environment Variables
-- `GET /list-env/:application_uuid` - List environment variables
-- `POST /create-env` - Add environment variable
-- `PUT /update-env` - Update environment variable
-- `DELETE /delete-env` - Remove environment variable
+- `GET /list-env/:application_uuid` - List variables
+- `POST /create-env` - Add variable
+- `POST /create-env-bulk` - Add variables
+- `PUT /update-env` - Update variable
+- `DELETE /delete-env` - Remove variable
 
 ### Databases
-- `POST /create-database` - Create a new database
-- `GET /get-database/:uuid` - Get database details
-- `GET /list-database` - List all databases
-- `DELETE /delete-database/:uuid` - Remove a database
-- `POST /restart-database/:uuid` - Restart a database
-- `POST /start-database/:uuid` - Start a database
-- `POST /stop-database/:uuid` - Stop a database
+- `POST /create-database-<postgresql/mongodb/redis>` - Create database
+- `GET /get-database/:uuid` - Get details
+- `GET /list-database` - List user's databases
+- `DELETE /delete-database/:uuid` - Remove database
+- `POST /start-database/:uuid` - Start database
+- `POST /stop-database/:uuid` - Stop database
+- `POST /restart-database/:uuid` - Restart database
 
 ### Projects
-- `POST /create-project` - Create a new project
-- `GET /get-project/:uuid` - Get project details
-- `GET /list-project` - List all projects
-- `DELETE /delete-project/:uuid` - Remove a project
+- `POST /create-project` - Create project
+- `GET /get-project/:uuid` - Get details
+- `GET /list-project` - List user's projects
+- `DELETE /delete-project/:uuid` - Remove project
 
-### Users
-- `POST /create-user` - Register a new user
-- `POST /signin-user` - User authentication
-- `GET /list-user` - List all users (admin only)
-- `DELETE /delete-user/:id` - Remove a user (admin only)
-
-## Authentication
-
-The API uses JWT tokens for authentication. Protected endpoints require a valid JWT token in the cookie named `auth-token`. The token is issued upon successful user sign-in and contains user identification claims.
-
-Administrative endpoints may require additional authorization via the `PRIV_TOKEN` for system-level operations.
+### Admin
+- `POST /create-user` - Register new user
+- `GET /list-user` - List all users
+- `DELETE /delete-user/:id` - Remove user
 
 ## Database Schema
 
-The application uses PostgreSQL for persistent storage of user data, application metadata, and system configurations. Run the migrations in `src/system_database/migrations.sql` to set up the required tables.
+PostgreSQL tables:
+- `users` - User accounts with email authentication
+- `projects` - User-owned project containers
+- `applications` - Deployed applications linked to projects
+- `databases` - Database instances (MongoDB, PostgreSQL, Redis) linked to projects
 
 ## Development
 
-### Import Aliases
-
-The project uses path aliases for cleaner imports:
-- `@src/` - Source directory root
-- `@coolify/` - Coolify integration modules
-- `@routes/` - API route handlers
-- `@sysdb/` - System database operations
-- `@utils/` - Utility functions
-
 ### Dependencies
+- Hono - Web framework
+- Zod - Schema validation
+- PostgreSQL driver
+- Resend - Email service
+- JWT - Authentication
 
-- **Hono**: Web framework for building the API
-- **PostgreSQL**: Database for persistent storage
-- **Resend**: Email service provider
-- **Zod**: Schema validation library
-- **JWT**: Authentication token management
+### Import Aliases
+- `@coolify/` - Coolify API client
+- `@routes/` - Route handlers
+- `@sysdb/` - Database operations
+- `@utils/` - Utilities
 
-## Security Considerations
+### Scripts
+```bash
+deno task dev    # Development server with watch mode
+deno task start  # Production server
+```
 
-- All sensitive credentials should be stored in environment variables
-- JWT secrets should be strong and regularly rotated
-- Database connections use SSL in production
-- Input validation is performed on all API endpoints
-- Rate limiting should be implemented in production environments
+## Security
 
-## License
-
-[Specify your license here]
-
-## Support
-
-For issues, questions, or contributions, please [specify contact method or issue tracker]
+- JWT tokens expire and must be refreshed
+- All Coolify operations are scoped to authenticated user's projects
+- Admin operations require additional `PRIV_TOKEN` header
+- Input validation on all endpoints
+- Environment variables for sensitive configuration
