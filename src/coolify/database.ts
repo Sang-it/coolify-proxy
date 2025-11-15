@@ -1,5 +1,6 @@
 import { COOLIFY_ACCESS_TOKEN, ENDPOINT } from "./constant.ts";
 import { getLocalhostServer } from "./server.ts";
+import { Mongo, PostrgeSQL, Redis } from "./types.ts";
 
 export const listDatabase = async () => {
   const response = await fetch(ENDPOINT.DATABASE, {
@@ -43,13 +44,12 @@ const HARDWARE_LIMITS = {
   limits_cpu_shares: 256,
 };
 
-export const createDatabasePostgreSQL = async (project_uuid: string) => {
+export const createDatabasePostgreSQL = async (params: PostrgeSQL) => {
   const server_uuid = await getLocalhostServer();
 
   const body = {
-    environment_name: "production",
     server_uuid,
-    project_uuid,
+    ...params,
     ...HARDWARE_LIMITS,
   };
 
@@ -70,13 +70,12 @@ export const createDatabasePostgreSQL = async (project_uuid: string) => {
   return await response.json();
 };
 
-export const createDatabaseMongoDB = async (project_uuid: string) => {
+export const createDatabaseMongoDB = async (params: Mongo) => {
   const server_uuid = await getLocalhostServer();
 
   const body = {
-    environment_name: "production",
     server_uuid,
-    project_uuid,
+    ...params,
     ...HARDWARE_LIMITS,
   };
   const response = await fetch(ENDPOINT.DATABASE + "/mongodb", {
@@ -96,13 +95,12 @@ export const createDatabaseMongoDB = async (project_uuid: string) => {
   return await response.json();
 };
 
-export const createDatabaseRedis = async (project_uuid: string) => {
+export const createDatabaseRedis = async (params: Redis) => {
   const server_uuid = await getLocalhostServer();
 
   const body = {
-    environment_name: "production",
     server_uuid,
-    project_uuid,
+    ...params,
     ...HARDWARE_LIMITS,
   };
 

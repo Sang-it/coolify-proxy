@@ -1,37 +1,6 @@
 import { getLocalhostServer } from "./server.ts";
 import { COOLIFY_ACCESS_TOKEN, ENDPOINT } from "./constant.ts";
-
-interface IAddApplication {
-  domains: string;
-  git_repository: string;
-  project_uuid: string;
-  git_branch: string;
-  ports_exposes: string;
-  build_pack:
-    | "nixpacks"
-    | "static"
-    | "dockerfile"
-    | "dockercompose";
-  install_command?: "string";
-  build_command?: "string";
-  start_command?: "string";
-}
-
-interface IUpdateApplication {
-  domains: string;
-  git_repository: string;
-  project: string;
-  git_branch: string;
-  ports_exposes: string;
-  build_pack:
-    | "nixpacks"
-    | "static"
-    | "dockerfile"
-    | "dockercompose";
-  install_command?: "string";
-  build_command?: "string";
-  start_command?: "string";
-}
+import { Application } from "./types.ts";
 
 const HARDWARE_LIMITS = {
   limits_memory: "2g",
@@ -42,11 +11,10 @@ const HARDWARE_LIMITS = {
   limits_cpu_shares: 256,
 };
 
-export const createApplication = async (params: IAddApplication) => {
+export const createApplication = async (params: Application) => {
   const server_uuid = await getLocalhostServer();
 
   const body = {
-    environment_name: "production",
     server_uuid,
     ...params,
     ...HARDWARE_LIMITS,
@@ -70,7 +38,7 @@ export const createApplication = async (params: IAddApplication) => {
   return response.json();
 };
 
-export const updateApplication = async (params: IUpdateApplication) => {
+export const updateApplication = async (params: Application) => {
   const body = {
     ...params,
   };

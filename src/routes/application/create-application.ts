@@ -4,21 +4,14 @@ import { jwt } from "hono/jwt";
 import {
   createApplication as createApplicationCoolify,
   deleteApplication,
+  getApplication,
 } from "@coolify/application.ts";
 import { createApplication as createApplicationEntry } from "@sysdb/application/create-application.ts";
 import { safeAsync } from "@utils/safe-async.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
+import { ZApplication } from "@coolify/types.ts";
 
 const createApplicationRoute = new Hono();
-
-const ZcreateApplication = z.object({
-  domains: z.url({ hostname: /(^|\.)caldwellwebservices\.com$/ }),
-  git_repository: z.string(),
-  project_uuid: z.string(),
-  git_branch: z.string(),
-  ports_exposes: z.string(),
-  build_pack: z.enum(["nixpacks", "static", "dockerfile", "dockercompose"]),
-});
 
 const JWT_SECRET = getEnvThrows("JWT_SECRET");
 
@@ -37,7 +30,7 @@ createApplicationRoute.post(
       return c.json({ message: jsonError.message });
     }
 
-    const parsed = ZcreateApplication.safeParse(body);
+    const parsed = ZApplication.safeParse(body);
     if (!parsed.success) {
       c.status(422);
       return c.json({ message: z.prettifyError(parsed.error) });
@@ -53,13 +46,39 @@ createApplicationRoute.post(
       return c.json({ message: createApplicationErrorCoolify.message });
     }
 
+    if (!parsed.data.domains) {
+      const { data, error } = await safeAsync(
+        () =>
+          getApplication(
+            applicationCoolify.uuid,
+          ),
+      );
+      if (error) {
+        const { error: deleteApplicationError } = await safeAsync(
+          () => deleteApplication(applicationCoolify.uuid),
+        );
+
+        if (deleteApplicationError) {
+          c.status(422);
+          return c.json({
+            message: deleteApplicationError.message,
+            _info: `Contact admin. Dangling app - ${applicationCoolify.uuid}`,
+          });
+        }
+
+        c.status(422);
+        return c.json({ message: error.message });
+      }
+      parsed.data.domains = data.fqdn;
+    }
+
     const { data: applicationEntry, error: createApplicationErrorEntry } =
       await safeAsync(
         () =>
           createApplicationEntry(
             applicationCoolify.uuid,
             parsed.data.project_uuid,
-            parsed.data.domains,
+            parsed.data.domains!,
           ),
       );
 
@@ -70,7 +89,10 @@ createApplicationRoute.post(
 
       if (deleteApplicationError) {
         c.status(422);
-        return c.json({ message: deleteApplicationError.message });
+        return c.json({
+          message: deleteApplicationError.message,
+          _info: `Contact admin. Dangling app - ${applicationCoolify.uuid}`,
+        });
       }
 
       c.status(422);

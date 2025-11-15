@@ -72,7 +72,6 @@ app.route("/", restartDatabaseRoute);
 app.route("/", startDatabaseRoute);
 app.route("/", stopDatabaseRoute);
 
-//TODO: add auth to these too.
 app.route("/", createUserRoute);
 app.route("/", listUserRoute);
 app.route("/", deleteUserRoute);
