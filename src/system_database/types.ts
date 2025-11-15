@@ -12,18 +12,3 @@ export interface Project {
   name: string;
   created_at: string;
 }
-
-export interface Application {
-  id: string;
-  fqdn: string;
-  project_id: string;
-  created_at: string;
-}
-
-export interface Database {
-  id: string;
-  project_id: string;
-  engine: Engine;
-  connection_url: string;
-  created_at: string;
-}

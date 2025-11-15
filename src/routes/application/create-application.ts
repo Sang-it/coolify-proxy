@@ -1,11 +1,7 @@
 import z from "zod";
 import { Hono } from "hono";
 import { jwt } from "hono/jwt";
-import {
-  createApplication as createApplicationCoolify,
-  deleteApplication,
-} from "@coolify/application.ts";
-import { createApplication as createApplicationEntry } from "@sysdb/application/create-application.ts";
+import { createApplication } from "@coolify/application.ts";
 import { safeAsync } from "@utils/safe-async.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
 import { ZApplication } from "@coolify/types.ts";
@@ -35,44 +31,17 @@ createApplicationRoute.post(
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
-    const { data: applicationCoolify, error: createApplicationErrorCoolify } =
+    const { data: application, error: createApplicationError } =
       await safeAsync(
-        () => createApplicationCoolify(parsed.data),
+        () => createApplication(parsed.data),
       );
 
-    if (createApplicationErrorCoolify) {
+    if (createApplicationError) {
       c.status(422);
-      return c.json({ message: createApplicationErrorCoolify.message });
+      return c.json({ message: createApplicationError.message });
     }
 
-    const { data: applicationEntry, error: createApplicationErrorEntry } =
-      await safeAsync(
-        () =>
-          createApplicationEntry(
-            applicationCoolify.uuid,
-            parsed.data.project_uuid,
-            parsed.data.domains,
-          ),
-      );
-
-    if (createApplicationErrorEntry) {
-      const { error: deleteApplicationError } = await safeAsync(
-        () => deleteApplication(applicationCoolify.uuid),
-      );
-
-      if (deleteApplicationError) {
-        c.status(422);
-        return c.json({
-          message: deleteApplicationError.message,
-          _info: `Contact admin. Dangling app - ${applicationCoolify.uuid}`,
-        });
-      }
-
-      c.status(422);
-      return c.json({ message: createApplicationErrorEntry.message });
-    }
-
-    return c.json(applicationEntry);
+    return c.json(application);
   },
 );
 

@@ -1,8 +1,7 @@
 import { Hono } from "hono";
 import { jwt } from "hono/jwt";
 import { safeAsync } from "@utils/safe-async.ts";
-import { deleteApplication as deleteApplicationCoolify } from "@coolify/application.ts";
-import { deleteApplication as deleteApplicationEntry } from "@sysdb/application/delete-application.ts";
+import { deleteApplication } from "@coolify/application.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
 
 const deleteApplicationRoute = new Hono();
@@ -17,18 +16,12 @@ deleteApplicationRoute.delete(
   }),
   async (c) => {
     const uuid = c.req.param("uuid");
-    const { error: deleteApplicationCoolifyError } = await safeAsync(() =>
-      deleteApplicationCoolify(uuid)
+    const { error: deleteApplicationError } = await safeAsync(() =>
+      deleteApplication(uuid)
     );
-    if (deleteApplicationCoolifyError) {
+    if (deleteApplicationError) {
       c.status(404);
-      return c.json({ message: deleteApplicationCoolifyError.message });
-    }
-
-    const { error } = await safeAsync(() => deleteApplicationEntry(uuid));
-    if (error) {
-      c.status(404);
-      return c.json({ message: error });
+      return c.json({ message: deleteApplicationError.message });
     }
 
     c.status(200);

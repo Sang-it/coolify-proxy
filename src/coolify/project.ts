@@ -53,6 +53,23 @@ export const createProject = async (name: string) => {
   return await response.json();
 };
 
+export const getProjectResources = async (uuid: string) => {
+  const response = await fetch(`${ENDPOINT.PROJECT}/${uuid}/production`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${COOLIFY_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(
+      `Couldn't get project resources. \n ${JSON.stringify(data)}`,
+    );
+  }
+  return await response.json();
+};
+
 export const deleteProject = async (uuid: string) => {
   const response = await fetch(`${ENDPOINT.PROJECT}/${uuid}`, {
     method: "DELETE",

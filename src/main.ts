@@ -5,8 +5,6 @@ import {
   createEnvRoute,
   deleteApplicationRoute,
   deleteEnvRoute,
-  getApplicationRoute,
-  listApplicationRoute,
   listEnvRoute,
   restartApplicationRoute,
   startApplicationRoute,
@@ -17,8 +15,6 @@ import {
 import {
   createDatabaseRoute,
   deleteDatabaseRoute,
-  getDatabaseRoute,
-  listDatabaseRoute,
   restartDatabaseRoute,
   startDatabaseRoute,
   stopDatabaseRoute,
@@ -26,7 +22,7 @@ import {
 import {
   createProjectRoute,
   deleteProjectRoute,
-  getProjectRoute,
+  getProjectResourcesRoute,
   listProjectRoute,
 } from "@routes/project/index.ts";
 import {
@@ -47,8 +43,6 @@ app.get("/", (c) => {
 
 app.route("/", createApplicationRoute);
 app.route("/", updateApplicationRoute);
-app.route("/", getApplicationRoute);
-app.route("/", listApplicationRoute);
 app.route("/", deleteApplicationRoute);
 
 app.route("/", restartApplicationRoute);
@@ -61,13 +55,11 @@ app.route("/", updateEnvRoute);
 app.route("/", deleteEnvRoute);
 
 app.route("/", createProjectRoute);
-app.route("/", getProjectRoute);
+app.route("/", getProjectResourcesRoute);
 app.route("/", listProjectRoute);
 app.route("/", deleteProjectRoute);
 
 app.route("/", createDatabaseRoute);
-app.route("/", getDatabaseRoute);
-app.route("/", listDatabaseRoute);
 app.route("/", deleteDatabaseRoute);
 
 app.route("/", restartDatabaseRoute);

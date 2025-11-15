@@ -5,9 +5,7 @@ import {
   createDatabaseMongoDB,
   createDatabasePostgreSQL,
   createDatabaseRedis,
-  deleteDatabase,
 } from "@coolify/database.ts";
-import { createDatabase as createDatabaseEntry } from "@sysdb/database/create-database.ts";
 import { safeAsync } from "@utils/safe-async.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
 import { ZMongo, ZPostgreSQL, ZRedis } from "@coolify/types.ts";
@@ -37,7 +35,7 @@ createDatabaseRoute.post(
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
-    const { data: databaseCoolify, error: createDatabaseErrorCoolify } =
+    const { data: database, error: createDatabaseErrorCoolify } =
       await safeAsync(
         () => createDatabaseMongoDB(parsed.data),
       );
@@ -46,33 +44,7 @@ createDatabaseRoute.post(
       return c.json({ message: createDatabaseErrorCoolify.message });
     }
 
-    const { data: databaseEntry, error: createDatabaseErrorEntry } =
-      await safeAsync(
-        () =>
-          createDatabaseEntry(
-            databaseCoolify.uuid,
-            parsed.data.project_uuid,
-            "mongodb",
-            databaseCoolify.internal_db_url,
-          ),
-      );
-
-    if (createDatabaseErrorEntry) {
-      const { error: deleteDatabaseError } = await safeAsync(
-        () => deleteDatabase(databaseCoolify.uuid),
-      );
-      if (deleteDatabaseError) {
-        c.status(422);
-        return c.json({
-          message: deleteDatabaseError,
-          _info: `Contact Admin. Dangling db - ${databaseCoolify.uuid}`,
-        });
-      }
-      c.status(422);
-      return c.json({ message: createDatabaseErrorEntry });
-    }
-
-    return c.json(databaseEntry);
+    return c.json(database);
   },
 );
 
@@ -97,7 +69,7 @@ createDatabaseRoute.post(
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
-    const { data: databaseCoolify, error: createDatabaseErrorCoolify } =
+    const { data: database, error: createDatabaseErrorCoolify } =
       await safeAsync(
         () => createDatabasePostgreSQL(parsed.data),
       );
@@ -107,33 +79,7 @@ createDatabaseRoute.post(
       return c.json({ message: createDatabaseErrorCoolify.message });
     }
 
-    const { data: databaseEntry, error: createDatabaseErrorEntry } =
-      await safeAsync(
-        () =>
-          createDatabaseEntry(
-            databaseCoolify.uuid,
-            parsed.data.project_uuid,
-            "postgresql",
-            databaseCoolify.internal_db_url,
-          ),
-      );
-
-    if (createDatabaseErrorEntry) {
-      const { error: deleteDatabaseError } = await safeAsync(
-        () => deleteDatabase(databaseCoolify.uuid),
-      );
-      if (deleteDatabaseError) {
-        c.status(422);
-        return c.json({
-          message: deleteDatabaseError,
-          _info: `Contact Admin. Dangling db - ${databaseCoolify.uuid}`,
-        });
-      }
-      c.status(422);
-      return c.json({ message: createDatabaseErrorEntry });
-    }
-
-    return c.json(databaseEntry);
+    return c.json(database);
   },
 );
 
@@ -158,7 +104,7 @@ createDatabaseRoute.post(
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
-    const { data: databaseCoolify, error: createDatabaseErrorCoolify } =
+    const { data: database, error: createDatabaseErrorCoolify } =
       await safeAsync(
         () => createDatabaseRedis(parsed.data),
       );
@@ -168,33 +114,7 @@ createDatabaseRoute.post(
       return c.json({ message: createDatabaseErrorCoolify.message });
     }
 
-    const { data: databaseEntry, error: createDatabaseErrorEntry } =
-      await safeAsync(
-        () =>
-          createDatabaseEntry(
-            databaseCoolify.uuid,
-            parsed.data.project_uuid,
-            "redis",
-            databaseCoolify.internal_db_url,
-          ),
-      );
-
-    if (createDatabaseErrorEntry) {
-      const { error: deleteDatabaseError } = await safeAsync(
-        () => deleteDatabase(databaseCoolify.uuid),
-      );
-      if (deleteDatabaseError) {
-        c.status(422);
-        return c.json({
-          message: deleteDatabaseError,
-          _info: `Contact Admin. Dangling db - ${databaseCoolify.uuid}`,
-        });
-      }
-      c.status(422);
-      return c.json({ message: createDatabaseErrorEntry });
-    }
-
-    return c.json(databaseEntry);
+    return c.json(database);
   },
 );
 

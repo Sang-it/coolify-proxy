@@ -1,9 +1,7 @@
-export * from "./get-application.ts";
 export * from "./create-application.ts";
 export * from "./start-application.ts";
 export * from "./stop-application.ts";
 export * from "./restart-application.ts";
-export * from "./list-application.ts";
 export * from "./update-application.ts";
 export * from "./delete-application.ts";
 

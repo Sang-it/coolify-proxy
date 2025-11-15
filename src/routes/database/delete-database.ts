@@ -1,8 +1,7 @@
 import { Hono } from "hono";
 import { jwt } from "hono/jwt";
 import { safeAsync } from "@utils/safe-async.ts";
-import { deleteDatabase as deleteDatabaseCoolify } from "@coolify/database.ts";
-import { deleteDatabase as deleteDatabaseEntry } from "@sysdb/database/delete-database.ts";
+import { deleteDatabase } from "@coolify/database.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
 
 const deleteDatabaseRoute = new Hono();
@@ -17,19 +16,14 @@ deleteDatabaseRoute.delete(
   }),
   async (c) => {
     const uuid = c.req.param("uuid");
-    const { error: deleteDatabaseCoolifyError } = await safeAsync(() =>
-      deleteDatabaseCoolify(uuid)
+    const { error: deleteDatabaseError } = await safeAsync(() =>
+      deleteDatabase(uuid)
     );
-    if (deleteDatabaseCoolifyError) {
+    if (deleteDatabaseError) {
       c.status(404);
-      return c.json({ message: deleteDatabaseCoolifyError.message });
+      return c.json({ message: deleteDatabaseError.message });
     }
 
-    const { error } = await safeAsync(() => deleteDatabaseEntry(uuid));
-    if (error) {
-      c.status(404);
-      return c.json({ message: error });
-    }
     c.status(200);
     return c.text("OK");
   },
