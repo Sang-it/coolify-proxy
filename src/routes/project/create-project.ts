@@ -66,7 +66,10 @@ createProjectRoute.post(
       );
       if (deleteProjectError) {
         c.status(422);
-        return c.json({ message: deleteProjectError });
+        return c.json({
+          message: deleteProjectError,
+          _info: `Contact Admin. Dangiling project - ${projectCoolify.uuid}`,
+        });
       }
       c.status(422);
       return c.json({ message: createProjectErrorEntry });

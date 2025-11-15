@@ -55,3 +55,13 @@ export const ZMongo = ZCommonDb.extend({
   mongo_initdb_root_username: z.string().optional(),
 });
 export type Mongo = z.infer<typeof ZMongo>;
+
+export const ZEnvironmentVariable = z.object({
+  key: z.string(),
+  value: z.string(),
+  is_preview: z.boolean().optional(),
+  is_literal: z.boolean().optional(),
+  is_multiline: z.boolean().optional(),
+  is_shown_once: z.boolean().optional(),
+});
+export type EnvironmentVariable = z.infer<typeof ZEnvironmentVariable>;

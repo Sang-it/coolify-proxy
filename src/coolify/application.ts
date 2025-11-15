@@ -1,6 +1,6 @@
 import { getLocalhostServer } from "./server.ts";
 import { COOLIFY_ACCESS_TOKEN, ENDPOINT } from "./constant.ts";
-import { Application } from "./types.ts";
+import { Application, EnvironmentVariable } from "./types.ts";
 
 const HARDWARE_LIMITS = {
   limits_memory: "2g",
@@ -187,19 +187,14 @@ export const listEnv = async (uuid: string) => {
   return await response.json();
 };
 
-interface IEnv {
-  key: string;
-  value: string;
-}
-
-export const createEnv = async (uuid: string, params: IEnv) => {
+export const createEnv = async (uuid: string, params: EnvironmentVariable) => {
   const response = await fetch(`${ENDPOINT.APPLICATION}/${uuid}/envs`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${COOLIFY_ACCESS_TOKEN}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...params, is_preview: true }),
+    body: JSON.stringify({ ...params }),
   });
 
   if (!response.ok) {
@@ -212,14 +207,14 @@ export const createEnv = async (uuid: string, params: IEnv) => {
   return await response.json();
 };
 
-export const updateEnv = async (uuid: string, params: IEnv) => {
+export const updateEnv = async (uuid: string, params: EnvironmentVariable) => {
   const response = await fetch(`${ENDPOINT.APPLICATION}/${uuid}/envs`, {
     method: "PATCH",
     headers: {
       "Authorization": `Bearer ${COOLIFY_ACCESS_TOKEN}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...params, is_preview: true }),
+    body: JSON.stringify({ ...params }),
   });
 
   if (!response.ok) {

@@ -4,15 +4,11 @@ import { jwt } from "hono/jwt";
 import { updateEnv } from "@coolify/application.ts";
 import { safeAsync } from "@utils/safe-async.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
+import { ZEnvironmentVariable } from "@coolify/types.ts";
 
 const updateEnvRoute = new Hono();
 
 const JWT_SECRET = getEnvThrows("JWT_SECRET");
-
-const ZupdateEnv = z.object({
-  key: z.string(),
-  value: z.string(),
-});
 
 updateEnvRoute.patch(
   "/update-env/:uuid",
@@ -30,7 +26,7 @@ updateEnvRoute.patch(
       return c.json({ message: jsonError.message });
     }
 
-    const parsed = ZupdateEnv.safeParse(body);
+    const parsed = ZEnvironmentVariable.safeParse(body);
     if (!parsed.success) {
       c.status(422);
       return c.json({ message: z.prettifyError(parsed.error) });
