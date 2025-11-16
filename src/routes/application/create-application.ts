@@ -21,13 +21,13 @@ createApplicationRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZApplication.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -37,7 +37,7 @@ createApplicationRoute.post(
       );
 
     if (createApplicationError) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: createApplicationError.message });
     }
 

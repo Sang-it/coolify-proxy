@@ -13,7 +13,7 @@ listUserRoute.get("/list-user", bearerAuth({ token }), async (c) => {
     () => listUser(),
   );
   if (listUserError) {
-    c.status(422);
+    c.status(500);
     return c.json({ message: listUserError.message });
   }
 

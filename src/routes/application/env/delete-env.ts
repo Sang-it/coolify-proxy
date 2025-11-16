@@ -22,7 +22,7 @@ deleteEnvRoute.delete(
       () => deleteEnv(app_uuid, env_uuid),
     );
     if (deleteEnvError) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: deleteEnvError.message });
     }
 

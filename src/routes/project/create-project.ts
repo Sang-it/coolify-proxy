@@ -29,13 +29,13 @@ createProjectRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZcreateProject.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -44,7 +44,7 @@ createProjectRoute.post(
         () => createProjectCoolify(parsed.data.name),
       );
     if (createProjectErrorCoolify) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: createProjectErrorCoolify });
     }
 
@@ -65,17 +65,17 @@ createProjectRoute.post(
         () => deleteProject(projectCoolify.uuid),
       );
       if (deleteProjectError) {
-        c.status(422);
+        c.status(500);
         return c.json({
           message: deleteProjectError,
           _info: `Contact Admin. Dangiling project - ${projectCoolify.uuid}`,
         });
       }
-      c.status(422);
+      c.status(500);
       return c.json({ message: createProjectErrorEntry });
     }
 
-    c.status(200);
+    c.status(201);
     return c.json(projectEntry);
   },
 );

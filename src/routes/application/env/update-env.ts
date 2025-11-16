@@ -22,13 +22,13 @@ updateEnvRoute.patch(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZEnvironmentVariable.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -36,7 +36,7 @@ updateEnvRoute.patch(
       () => updateEnv(uuid, parsed.data),
     );
     if (updateEnvError) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: updateEnvError.message });
     }
 

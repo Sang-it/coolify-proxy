@@ -22,13 +22,13 @@ createEnvRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZEnvironmentVariable.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -36,7 +36,7 @@ createEnvRoute.post(
       () => createEnv(uuid, parsed.data),
     );
     if (createEnvError) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: createEnvError.message });
     }
 
@@ -58,13 +58,13 @@ createEnvRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZEnvironmentVariableBulk.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -74,7 +74,7 @@ createEnvRoute.post(
         () => createEnv(app_uuid, env),
       );
       if (createEnvError) {
-        c.status(422);
+        c.status(500);
         return c.json({ message: createEnvError.message });
       }
       envs.push(data);

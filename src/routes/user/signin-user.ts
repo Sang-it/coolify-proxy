@@ -43,13 +43,13 @@ signinUserRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZsigninUser.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -74,8 +74,8 @@ signinUserRoute.post(
       sendSigninEmail(parsed.data.email, token)
     );
     if (sendEmailError) {
-      c.status(401);
-      return c.json({ message: getUserError });
+      c.status(500);
+      return c.json({ message: sendEmailError.message });
     }
 
     c.status(200);

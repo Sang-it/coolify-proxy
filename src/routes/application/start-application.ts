@@ -18,7 +18,7 @@ startApplicationRoute.post(
     const uuid = c.req.param("uuid");
     const { data, error } = await safeAsync(() => startApplication(uuid));
     if (error) {
-      c.status(404);
+      c.status(500);
       return c.json({ message: error.message });
     }
     c.status(200);

@@ -22,13 +22,13 @@ updateApplicationRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZApplication.partial().safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -37,7 +37,7 @@ updateApplicationRoute.post(
         () => updateApplication(app_uuid, parsed.data),
       );
     if (updateApplicationError) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: updateApplicationError.message });
     }
 

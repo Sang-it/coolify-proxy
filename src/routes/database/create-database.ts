@@ -25,13 +25,13 @@ createDatabaseRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZMongo.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -40,7 +40,7 @@ createDatabaseRoute.post(
         () => createDatabaseMongoDB(parsed.data),
       );
     if (createDatabaseErrorCoolify) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: createDatabaseErrorCoolify.message });
     }
 
@@ -59,13 +59,13 @@ createDatabaseRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZPostgreSQL.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -75,7 +75,7 @@ createDatabaseRoute.post(
       );
 
     if (createDatabaseErrorCoolify) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: createDatabaseErrorCoolify.message });
     }
 
@@ -94,13 +94,13 @@ createDatabaseRoute.post(
       c.req.json()
     );
     if (jsonError) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: jsonError.message });
     }
 
     const parsed = ZRedis.safeParse(body);
     if (!parsed.success) {
-      c.status(422);
+      c.status(400);
       return c.json({ message: z.prettifyError(parsed.error) });
     }
 
@@ -110,7 +110,7 @@ createDatabaseRoute.post(
       );
 
     if (createDatabaseErrorCoolify) {
-      c.status(422);
+      c.status(500);
       return c.json({ message: createDatabaseErrorCoolify.message });
     }
 

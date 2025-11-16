@@ -16,13 +16,13 @@ const token = getEnvThrows("PRIV_TOKEN");
 createUserRoute.post("/create-user", bearerAuth({ token }), async (c) => {
   const { data: body, error: jsonError } = await safeAsync(() => c.req.json());
   if (jsonError) {
-    c.status(422);
+    c.status(400);
     return c.json({ message: jsonError.message });
   }
 
   const parsed = ZcreateUser.safeParse(body);
   if (!parsed.success) {
-    c.status(422);
+    c.status(400);
     return c.json({ message: z.prettifyError(parsed.error) });
   }
 
@@ -30,11 +30,11 @@ createUserRoute.post("/create-user", bearerAuth({ token }), async (c) => {
     () => createUser(parsed.data.email),
   );
   if (createUserError) {
-    c.status(422);
+    c.status(500);
     return c.json({ message: createUserError.message });
   }
 
-  c.status(200);
+  c.status(201);
   return c.json(user);
 });
 
@@ -45,13 +45,13 @@ const ZcreateUserBulk = z.object({
 createUserRoute.post("/create-user-bulk", bearerAuth({ token }), async (c) => {
   const { data: body, error: jsonError } = await safeAsync(() => c.req.json());
   if (jsonError) {
-    c.status(422);
+    c.status(400);
     return c.json({ message: jsonError.message });
   }
 
   const parsed = ZcreateUserBulk.safeParse(body);
   if (!parsed.success) {
-    c.status(422);
+    c.status(400);
     return c.json({ message: z.prettifyError(parsed.error) });
   }
 
@@ -59,11 +59,11 @@ createUserRoute.post("/create-user-bulk", bearerAuth({ token }), async (c) => {
     () => createUserBulk(parsed.data.emails),
   );
   if (createUserError) {
-    c.status(422);
+    c.status(500);
     return c.json({ message: createUserError.message });
   }
 
-  c.status(200);
+  c.status(201);
   return c.json(users);
 });
 
