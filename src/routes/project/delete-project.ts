@@ -28,7 +28,7 @@ deleteProjectRoute.get(
     const { error } = await safeAsync(() => deleteProjectEntry(uuid));
     if (error) {
       c.status(404);
-      return c.json({ message: error });
+      return c.json({ message: error.message });
     }
 
     c.status(200);
