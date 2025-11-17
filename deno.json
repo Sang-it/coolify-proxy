@@ -2,6 +2,7 @@
     "imports": {
         "@types/pg": "npm:@types/pg@^8.15.6",
         "hono": "jsr:@hono/hono@^4.9.5",
+        "hono-rate-limiter": "npm:hono-rate-limiter@^0.4.2",
         "pg": "npm:pg@^8.16.3",
         "resend": "npm:resend@^6.4.2",
         "zod": "jsr:@zod/zod@^4.1.5",

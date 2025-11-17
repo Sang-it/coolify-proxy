@@ -9,14 +9,14 @@ const getDeploymentRoute = new Hono();
 const JWT_SECRET = getEnvThrows("JWT_SECRET");
 
 getDeploymentRoute.get(
-  "/get-deployment/:uuid",
+  "/get-deployment/:app_uuid",
   jwt({
     secret: JWT_SECRET,
     cookie: "auth-token",
   }),
   async (c) => {
-    const uuid = c.req.param("uuid");
-    const { data, error } = await safeAsync(() => getDeployment(uuid));
+    const app_uuid = c.req.param("app_uuid");
+    const { data, error } = await safeAsync(() => getDeployment(app_uuid));
     if (error) {
       c.status(404);
       return c.json({ message: error.message });

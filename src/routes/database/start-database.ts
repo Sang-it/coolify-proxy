@@ -3,6 +3,8 @@ import { jwt } from "hono/jwt";
 import { safeAsync } from "@utils/safe-async.ts";
 import { startDatabase } from "@coolify/database.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
+import { rateLimiter } from "hono-rate-limiter";
+import { User } from "@sysdb/types.ts";
 
 const startDatabaseRoute = new Hono();
 
@@ -14,8 +16,21 @@ startDatabaseRoute.post(
     secret: JWT_SECRET,
     cookie: "auth-token",
   }),
+  // @ts-expect-error <>
+  rateLimiter({
+    windowMs: 60 * 1 * 1000,
+    limit: 1,
+    standardHeaders: "draft-6",
+    keyGenerator: (c) => {
+      const uuid = c.req.param("uuid");
+      // @ts-expect-error : <>
+      const payload = c.get("jwtPayload") as unknown as User;
+      return `${payload.id}${uuid}`;
+    },
+  }),
   async (c) => {
     const uuid = c.req.param("uuid");
+
     const { data, error } = await safeAsync(() => startDatabase(uuid));
     if (error) {
       c.status(500);

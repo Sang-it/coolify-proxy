@@ -49,7 +49,7 @@ createDatabaseRoute.post(
 );
 
 createDatabaseRoute.post(
-  "/create-database-postgres",
+  "/create-database-postgresql",
   jwt({
     secret: JWT_SECRET,
     cookie: "auth-token",
