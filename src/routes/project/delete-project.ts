@@ -32,7 +32,7 @@ deleteProjectRoute.get(
     }
 
     c.status(200);
-    return c.text("OK");
+    return c.json({ success: true });
   },
 );
 

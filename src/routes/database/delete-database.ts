@@ -25,7 +25,7 @@ deleteDatabaseRoute.delete(
     }
 
     c.status(200);
-    return c.text("OK");
+    return c.json({ success: true });
   },
 );
 

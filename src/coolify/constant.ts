@@ -9,6 +9,6 @@ export const ENDPOINT = {
   PROJECT: COOLIFY_BASE_URL + "/api/v1/projects",
   APPLICATION: COOLIFY_BASE_URL + "/api/v1/applications",
   APPLICATION_PUBLIC: COOLIFY_BASE_URL + "/api/v1/applications/public",
-  DEPLOY: COOLIFY_BASE_URL + "/api/v1/deploy",
+  DEPLOYMENT: COOLIFY_BASE_URL + "/api/v1/deployments",
   DATABASE: COOLIFY_BASE_URL + "/api/v1/databases",
 };

@@ -18,7 +18,7 @@ _truncateDbRoute.delete(
       return c.json({ message: error.message });
     }
     c.status(200);
-    return c.text("OK");
+    return c.json({ success: true });
   },
 );
 

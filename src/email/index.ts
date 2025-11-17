@@ -51,7 +51,7 @@ const signinEmail = (signinUrl: string) => {
 };
 
 export const sendSigninEmail = async (email: string, token: string) => {
-  const signinUrl = `http://frontend.com/signin/?token=${token}`;
+  const signinUrl = `http://localhost:3000/signin/?token=${token}`;
   const { error } = await resend.emails.send({
     from: "no-reply@caldwellwebservices.com",
     to: [email],

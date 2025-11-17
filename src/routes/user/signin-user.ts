@@ -26,7 +26,7 @@ signinUserRoute.get(
 
     if (jwtVerifyError) {
       c.status(401);
-      return c.text("Unauthorized.");
+      return c.json({ success: true });
     }
 
     setCookie(c, "auth-token", token);
