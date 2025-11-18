@@ -1,4 +1,4 @@
-import { pool } from "../index.ts";
+import { pool } from "../pool.ts";
 import { Project } from "../types.ts";
 
 export async function listProject(): Promise<Project[]> {

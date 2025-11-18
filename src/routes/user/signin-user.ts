@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { sign, verify } from "hono/jwt";
 import { safeAsync } from "@utils/safe-async.ts";
 import { getUserByEmail } from "@sysdb/user/get-user.ts";
-import { sendSigninEmail } from "../../email/index.ts";
+import { sendSigninEmail } from "../../email/send-email.ts";
 import { getEnvThrows } from "@utils/throws-env.ts";
 import { setCookie } from "hono/cookie";
 

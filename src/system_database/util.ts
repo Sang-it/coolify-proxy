@@ -1,4 +1,4 @@
-import { pool } from "./index.ts";
+import { pool } from "./pool.ts";
 
 export const _truncateDb = async () => {
   const client = await pool.connect();

@@ -1,4 +1,4 @@
-import { pool } from "../index.ts";
+import { pool } from "../pool.ts";
 import { User } from "../types.ts";
 
 export async function getUser(id: string): Promise<User> {
