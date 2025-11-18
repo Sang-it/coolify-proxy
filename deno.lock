@@ -1,21 +1,19 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@hono/hono@^4.9.5": "4.9.5",
-    "jsr:@zod/zod@^4.1.5": "4.1.5",
-    "npm:@types/node@*": "24.2.0",
+    "jsr:@hono/hono@^4.9.5": "4.9.11",
+    "jsr:@zod/zod@^4.1.5": "4.1.12",
     "npm:@types/pg@^8.15.6": "8.15.6",
-    "npm:hono-rate-limiter@*": "0.4.2_hono@4.10.6",
     "npm:hono-rate-limiter@~0.4.2": "0.4.2_hono@4.10.6",
     "npm:pg@^8.16.3": "8.16.3",
     "npm:resend@^6.4.2": "6.4.2"
   },
   "jsr": {
-    "@hono/hono@4.9.5": {
-      "integrity": "9979382257287abb33e98893247a97660adc0a9239cf37d57e207e3592040a96"
+    "@hono/hono@4.9.11": {
+      "integrity": "0ea26fad941c672f020194e8d332081b9164669189d27df5e111c5ae9a9d5823"
     },
-    "@zod/zod@4.1.5": {
-      "integrity": "e995ca7d588a835ce333de626c940e242c55b6763c5190e8cbb9fefb7d0fb4ef"
+    "@zod/zod@4.1.12": {
+      "integrity": "5876ed4c6d44673faf5120f0a461a2ada2eb6c735329d3ebaf5ba1fc08387695"
     }
   },
   "npm": {
