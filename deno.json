@@ -14,8 +14,8 @@
         "@sysdb/": "./src/system_database/"
     },
     "tasks": {
-        "start": "deno run --allow-env --env-file=.env --allow-read --allow-write --allow-net src/main.ts",
-        "dev": "deno run --watch --allow-env --env-file=.env --allow-read --allow-write --allow-net src/main.ts"
+        "start": "deno run --allow-env --env-file=.env --allow-read --allow-write --allow-net src/index.ts",
+        "dev": "deno run --watch --allow-env --env-file=.env --allow-read --allow-write --allow-net src/index.ts"
     },
     "compilerOptions": {
         "jsx": "precompile",
