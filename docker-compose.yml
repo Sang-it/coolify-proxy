@@ -1,43 +1,102 @@
-version: '3.8'
-
 services:
   db:
-    image: postgres:16-alpine
-    container_name: coolify-proxy-db
+    image: 'postgres:16-alpine'
+    container_name: db-qwk0w0c84gscwsgw0gwwggo8-033357009404
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: postgres
+      COOLIFY_BRANCH: '"main"'
+      COOLIFY_RESOURCE_UUID: qwk0w0c84gscwsgw0gwwggo8
+      COOLIFY_CONTAINER_NAME: db-qwk0w0c84gscwsgw0gwwggo8-033357009404
+      SERVICE_URL_APP: 'https://t8wc8o8g00swwgcg4c0o0kcc.caldwellwebservices.com'
+      SERVICE_FQDN_APP: t8wc8o8g00swwgcg4c0o0kcc.caldwellwebservices.com
+      SERVICE_NAME_DB: db
+      SERVICE_NAME_APP: app
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
+      - 'qwk0w0c84gscwsgw0gwwggo8_postgres-data:/var/lib/postgresql/data'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U postgres -d postgres'
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 10s
-
+    restart: unless-stopped
+    labels:
+      - coolify.managed=true
+      - coolify.version=4.0.0-beta.444
+      - coolify.applicationId=74
+      - coolify.type=application
+      - coolify.name=db-qwk0w0c84gscwsgw0gwwggo8-033357009404
+      - coolify.resourceName=sang-itcoolify-proxymain-b0w004csswscckc4c44ogooc
+      - coolify.projectName=meta
+      - coolify.serviceName=sang-itcoolify-proxymain-b0w004csswscckc4c44ogooc
+      - coolify.environmentName=production
+      - coolify.pullRequestId=0
+    networks:
+      qwk0w0c84gscwsgw0gwwggo8: null
+    env_file:
+      - .env
   app:
-    image: denoland/deno:latest
-    container_name: coolify-proxy-app
+    image: 'denoland/deno:latest'
+    container_name: app-qwk0w0c84gscwsgw0gwwggo8-033357021118
     volumes:
       - .:/app
     working_dir: /app
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
-      DATABASE_URL: postgres://postgres:password@db:5432/postgres
-      COOLIFY_BASE_URL: ${COOLIFY_BASE_URL}
-      COOLIFY_ACCESS_TOKEN: ${COOLIFY_ACCESS_TOKEN}
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
-      PRIV_TOKEN: ${PRIV_TOKEN}
-      FRONTEND_URL: ${FRONTEND_URL}
-    command: deno run --allow-env --allow-read --allow-write --allow-net src/index.ts
+      DATABASE_URL: 'postgres://postgres:password@db:5432/postgres'
+      COOLIFY_BASE_URL: '${COOLIFY_BASE_URL}'
+      COOLIFY_ACCESS_TOKEN: '${COOLIFY_ACCESS_TOKEN}'
+      RESEND_API_KEY: '${RESEND_API_KEY}'
+      JWT_SECRET: '${JWT_SECRET}'
+      PRIV_TOKEN: '${PRIV_TOKEN}'
+      FRONTEND_URL: '${FRONTEND_URL}'
+      COOLIFY_BRANCH: '"main"'
+      COOLIFY_RESOURCE_UUID: qwk0w0c84gscwsgw0gwwggo8
+      COOLIFY_CONTAINER_NAME: app-qwk0w0c84gscwsgw0gwwggo8-033357021118
+      SERVICE_URL_APP: 'https://t8wc8o8g00swwgcg4c0o0kcc.caldwellwebservices.com'
+      SERVICE_FQDN_APP: t8wc8o8g00swwgcg4c0o0kcc.caldwellwebservices.com
+      COOLIFY_URL: 'https://t8wc8o8g00swwgcg4c0o0kcc.caldwellwebservices.com'
+      COOLIFY_FQDN: t8wc8o8g00swwgcg4c0o0kcc.caldwellwebservices.com
+      SERVICE_NAME_DB: db
+      SERVICE_NAME_APP: app
+    command: 'deno run --allow-env --allow-read --allow-write --allow-net src/index.ts'
     depends_on:
       db:
         condition: service_healthy
-
+    restart: unless-stopped
+    labels:
+      - coolify.managed=true
+      - coolify.version=4.0.0-beta.444
+      - coolify.applicationId=74
+      - coolify.type=application
+      - coolify.name=app-qwk0w0c84gscwsgw0gwwggo8-033357021118
+      - coolify.resourceName=sang-itcoolify-proxymain-b0w004csswscckc4c44ogooc
+      - coolify.projectName=meta
+      - coolify.serviceName=sang-itcoolify-proxymain-b0w004csswscckc4c44ogooc
+      - coolify.environmentName=production
+      - coolify.pullRequestId=0
+      - 'caddy_0.encode=zstd gzip'
+      - 'caddy_0.handle_path.0_reverse_proxy={{upstreams}}'
+      - 'caddy_0.handle_path=/*'
+      - caddy_0.header=-Server
+      - 'caddy_0.try_files={path} /index.html /index.php'
+      - 'caddy_0=https://t8wc8o8g00swwgcg4c0o0kcc.caldwellwebservices.com'
+      - caddy_ingress_network=qwk0w0c84gscwsgw0gwwggo8
+    networks:
+      qwk0w0c84gscwsgw0gwwggo8: null
+    env_file:
+      - .env
 volumes:
-  postgres_data:
+  qwk0w0c84gscwsgw0gwwggo8_postgres-data:
+    name: qwk0w0c84gscwsgw0gwwggo8_postgres-data
+  qwk0w0c84gscwsgw0gwwggo8_:
+    name: qwk0w0c84gscwsgw0gwwggo8_
+networks:
+  qwk0w0c84gscwsgw0gwwggo8:
+    name: qwk0w0c84gscwsgw0gwwggo8
+    external: true
