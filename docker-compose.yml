@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: coolify-proxy-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: denoland/deno:latest
+    container_name: coolify-proxy-app
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:password@db:5432/postgres
+      COOLIFY_BASE_URL: ${COOLIFY_BASE_URL}
+      COOLIFY_ACCESS_TOKEN: ${COOLIFY_ACCESS_TOKEN}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      PRIV_TOKEN: ${PRIV_TOKEN}
+      FRONTEND_URL: ${FRONTEND_URL}
+    command: deno run --allow-env --allow-read --allow-write --allow-net src/index.ts
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

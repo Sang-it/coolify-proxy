@@ -33,6 +33,7 @@ import { updateApplicationRoute } from "@routes/application/update-application.t
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { getEnvThrows } from "@utils/throws-env.ts";
 
 const app = new Hono();
 
@@ -40,7 +41,10 @@ app.use(logger());
 app.use(
   "/*",
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      getEnvThrows("FRONTEND_URL"),
+    ],
     credentials: true,
   }),
 );
